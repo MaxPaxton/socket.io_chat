@@ -21,20 +21,21 @@ router.get('', (req, res, next) => {
 
 //----------------------------------------------------------------
 //----------------------------------------------------------------
-//Insert Event
+//Sumisson to view individual chat history
 router.post('', (req, res, next) => {
 
-    console.log('INSERT: an Event occured: ');
-  
-    var message = req.body;//JSON.stringify(req.body, null, 3);
-     console.log(message);
-     if(!message.socket_id || !message.username || !message.message || !message.room){
-       res.status(400);
-       console.log('Bad Data for New Message  INSERT:'+message);
-     }
-     else{
-        MessageModel.create(message);
-    }
+    var room = req.body.rooms_chat_selection ;
+    // console.log('REQ ---------->',req.body.rooms_chat_selection );
+    MessageModel.find({room},function(err,messages){
+        if(err){
+          res.send(err);
+        }
+        else{
+          res.setHeader('Content-Type',"application/json"); 
+          res.end(JSON.stringify(messages, null, 3));
+        }
+      })
+
   });
   //----------------------------------------------------------------
 

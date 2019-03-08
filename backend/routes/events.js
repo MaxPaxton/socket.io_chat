@@ -27,7 +27,6 @@ router.post('', (req, res, next) => {
     console.log('INSERT: an Event occured: ');
   
      var event = req.body;
-     console.log(event);
      if(!event.username || !event.action || !event.room){
        res.status(400);
        console.log('Bad Data for New Event  INSERT:');

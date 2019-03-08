@@ -24,6 +24,7 @@ btn.addEventListener("click", function(event){
     })
     //send message to DB
     axios.post('/api/history', {
+        socket_id: socket.id,
         username: username.value,
         room: room.value,
         message: message.value
@@ -44,15 +45,16 @@ submitUser.addEventListener("click", function(event){
         return false;
     }
     console.log(room.value);
-    socket.emit("joinRoom",{username: username.value , room: room.value},(data)=>{
+    socket.emit("joinRoom",{ socket_id :socket.id,username: username.value , room: room.value},(data)=>{
         if(data){
             userFormArea.style.display = "none";
             messageArea.style.display = "block";
             //send event to DB
             axios.post('/api/eventlog', {
+                socket_id: socket.id,
                 username: username.value,
                 room: room.value,
-                action: `${username.value} Logged in room ${room.value}`
+                action: `${username.id} chose ${username.value} as name and Logged in room ${room.value}`
               })
               .then(function (response) {
                 console.log(response);

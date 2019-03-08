@@ -1,11 +1,13 @@
 var express = require("express");
-var http = require('http');
 const bodyParser = require('body-parser');
-var path = require("path");
 var mongoose = require("mongoose");
 var app = express();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers',
@@ -27,11 +29,17 @@ mongoose.connect('mongodb://root:Roos2110@ds161335.mlab.com:61335/chat_assignmen
 
 // *********** Include the Api routes ***********
 const eventRoutes = require("./routes/events");
+const messageRoutes = require("./routes/messages");
+const roomHistoryRoutes = require("./routes/roomHistory");
 
 // *********** Connect to Mongo  ***********
 console.log('Attempting to connect to mongoose');
 
 // ******** Setup the Api routes ***********
 app.use("/api/eventlog", eventRoutes);
+app.use("/api/history", messageRoutes);
+//the assignment wants me to use a different route name to get individual chat history
+//but it could have been done with the same one
+app.use("/api/roomhistory", roomHistoryRoutes);
 
 module.exports = app;

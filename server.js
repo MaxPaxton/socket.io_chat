@@ -1,8 +1,7 @@
 var express = require('express');
 var backend = require('./backend/app');
-var http = require('http');
-var path = require("path");
-var mongoose = require("mongoose");
+const Message = require("./backend/models/message");
+var Event = require("./backend/models/event");
 var app = express();
 
 // connect to mongodb
@@ -29,18 +28,20 @@ online_users = [];
 rooms = ["Work Chat","School Chat","Friend Chat"];
 
 server.listen(3000);
-// WARNING: app.listen(80) will NOT work here!
-
 
 io.on('connection', function (socket) {
+  //Console Updates
   console.log("Connected...id:"+socket.id);
-
+  socket.username = "Anonymous"
+  socket.room = "Not Chosen"
   connections.push(socket);
   console.log("Connected: %s sockets connected", connections.length);
-
-  //default username
-  socket.username = "Anonymous";
-  console.log("id:"+socket.id+" and username"+socket.username);
+  //Event to database
+  var event = new Event({ socket_id :socket.id, username:socket.username , room:socket.room,action:`Anonymous user with id ${socket.id} made a connection`});
+  event.save(function (err, event) {
+    if (err) return console.error(err);
+    console.log("Initial Anonymous Connection Event");
+  });
 
   //Set Username and join Room
   socket.on("joinRoom", function(data,callback){
@@ -50,7 +51,7 @@ io.on('connection', function (socket) {
       socket.username = data.username;
       socket.room = data.room;
       connections[connections.indexOf(socket)].username = socket.username;
-      online_users.push({id: socket.id ,username: socket.username, room: socket.room})
+      online_users.push({socket_id: socket.id, username: socket.username, room: socket.room});
       console.log(online_users);
       io.sockets.in(data.room).emit("get users",online_users);
     }
@@ -58,7 +59,6 @@ io.on('connection', function (socket) {
 
   //Send Message
   socket.on('chat', function(data){
-    console.log(data);
     io.sockets.to(data.room).emit('chat', data);
    });
   socket.on("typing",function(data){
@@ -67,8 +67,15 @@ io.on('connection', function (socket) {
 
   //Disconnect
   socket.on("disconnect", function(data){
-    online_users.splice(online_users.indexOf({id: socket.id ,username: socket.username, room: socket.room}),1);
+    connections.splice(connections.indexOf(socket),1);
+    online_users.splice(online_users.indexOf({socket_id: socket.id ,username: socket.username, room: socket.room}),1);
     socket.broadcast.emit("get users",online_users);
-    console.log("Disconnected: "+online_users.length); 
+    console.log("Disconnected: "+online_users.length +" users left"); 
+    //Event to database
+    var event = new Event({socket_id :socket.id, username:socket.username, room:socket.room,action:`${socket.username} with id ${socket.id} disconnected!`});
+    event.save(function (err, event) {
+    if (err) return console.error(err);
+    console.log("Disconnection Event");
+  });
   })
 });

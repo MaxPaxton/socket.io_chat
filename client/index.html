@@ -10,6 +10,8 @@
     </head>
     <body>
         <div class="container">
+            <h1>My Awesome Chat:</h1>
+            <h6>By Maxim Paxton 101064370</h6>
             <div id="userFormArea" class="row">
                 <div class="col-md-12">
                     <form id="userForm">
@@ -47,10 +49,29 @@
                                 <input placeholder="type your message" id="message">
                                 <br/>
                                 <input type="submit" id="send" class="btn btn-primary" value="Send">
+                                <button class="btn btn-warning" value="Refresh Page" onClick="window.location.reload()">Back to Rooms</button>
                             </div>
                         </form>
                 </div>
             </div>
+            <hr/><br/><br/><br/>
+            <div><h6><strong>Second Part of Assignment:</strong> For Mike and Alla, so they can see the api routes</h6>
+                <a href="/api/history" class="btn btn-secondary" value="Get All Events">GET req to: View All Messages<a>
+                <a href="/api/eventlog" class="btn btn-secondary" value="Get All Events">GET req to: View All Events<a>
+            </div>
+            <form action="/api/roomhistory" method="POST" id="roomHistory">
+                <div class="formGroup">
+                    <label>Choose the indiviuall Room chat history with a post request</label>
+                    <br/>
+                    <select name="rooms_chat_selection" id="rooms_chat_selection">
+                            <option value="Work Chat">Work Chat</option>
+                            <option value="School Chat">School Chat</option>
+                            <option value="Friend Chat">Friend Chat</option>
+                    </select>
+                    <input type="submit" id="submitUser" class="btn btn-primary" value="View Room Chat History">
+                </div>
+                <br/><hr/>
+            </form>
         </div>
         <script src="/chat.js"></script>
     </body>
